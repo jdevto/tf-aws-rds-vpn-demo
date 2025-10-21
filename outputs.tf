@@ -1,14 +1,26 @@
-output "vpc_id" {
-  description = "ID of the VPC"
-  value       = aws_vpc.this.id
+# Essential Information
+output "rds_endpoint" {
+  description = "RDS MySQL endpoint"
+  value       = aws_db_instance.mysql.endpoint
 }
 
-output "public_subnet_ids" {
-  description = "IDs of the public subnets"
-  value       = aws_subnet.public[*].id
+output "mysql_connection_command" {
+  description = "Command to connect to RDS from Office EC2"
+  value       = "mysql -h ${aws_db_instance.mysql.endpoint} -u ${var.db_username} -p ${var.db_name}"
 }
 
-output "private_subnet_ids" {
-  description = "IDs of the private subnets"
-  value       = aws_subnet.private[*].id
+output "ssm_connection_command" {
+  description = "Command to connect to Office EC2 via SSM"
+  value       = "aws ssm start-session --target ${aws_instance.office_client.id} --region ${var.region}"
+}
+
+output "cloudwatch_dashboard_url" {
+  description = "CloudWatch Dashboard URL"
+  value       = "https://${var.region}.console.aws.amazon.com/cloudwatch/home?region=${var.region}#dashboards:name=${var.project_name}-monitoring-dashboard"
+}
+
+output "database_password" {
+  description = "Database password (sensitive)"
+  value       = random_password.db_password.result
+  sensitive   = true
 }
